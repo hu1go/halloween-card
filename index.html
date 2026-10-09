@@ -1,67 +1,413 @@
-html
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Halloween!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE HAUNTING | Halloween</title>
 
-    <style>
-        body {
-            background-color: #17121f;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&display=swap');
 
-        h1 {
-            color: orange;
-            font-size: 45px;
-        }
+:root {
+    --orange: #ff6500;
+    --red: #ff1010;
+    --dark: #080608;
+}
 
-        p {
-            font-size: 20px;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .card {
-            background-color: #30213d;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            margin: auto;
-            border: 2px solid orange;
-        }
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at 50% 20%, #32101c, #100910 48%, #020203);
+    color: #f5e9e9;
+    font-family: "Special Elite", monospace;
+    text-align: center;
+    cursor: crosshair;
+}
 
-        button {
-            background-color: orange;
-            color: black;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: .16;
+    background: repeating-linear-gradient(
+        0deg, transparent 0 3px, #ffffff09 4px
+    );
+}
 
-        button:hover {
-            background-color: darkorange;
-        }
-    </style>
+#flash {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#flash.bolt {
+    animation: lightning .55s ease-out;
+}
+
+@keyframes lightning {
+    0%, 100% { opacity: 0; }
+    8%, 16% { opacity: .8; }
+    12%, 25% { opacity: .08; }
+}
+
+.moon {
+    position: fixed;
+    top: 65px;
+    right: 12%;
+    width: 115px;
+    height: 115px;
+    border-radius: 50%;
+    background: #e5c8b2;
+    box-shadow: 0 0 35px #ff6c3840, 0 0 100px #ff300022;
+    opacity: .8;
+}
+
+.mist {
+    position: fixed;
+    z-index: 1;
+    inset: auto -50% 0;
+    height: 32vh;
+    background: linear-gradient(transparent, #c9c5d020, #aaa3b025);
+    filter: blur(22px);
+    animation: fog 18s linear infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes fog {
+    from { transform: translateX(-12%); }
+    to { transform: translateX(12%); }
+}
+
+header {
+    position: relative;
+    z-index: 2;
+    padding: 25px 15px 5px;
+}
+
+.eyebrow {
+    color: var(--orange);
+    letter-spacing: 5px;
+    font-size: 12px;
+}
+
+h1 {
+    font-family: "Nosifer", cursive;
+    color: #ff3d16;
+    font-size: clamp(2.5rem, 9vw, 6.5rem);
+    margin: 25px 0 10px;
+    text-shadow: 0 0 12px #ff3300, 0 0 45px #9d0000;
+    animation: titlePulse 3s infinite alternate;
+}
+
+@keyframes titlePulse {
+    from { text-shadow: 0 0 10px #ff3300; }
+    to { text-shadow: 0 0 20px #ff3300, 0 0 60px #b00000; }
+}
+
+.subtitle {
+    color: #c8a8a8;
+    letter-spacing: 3px;
+    font-size: 14px;
+}
+
+.scene {
+    position: relative;
+    z-index: 2;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 5vw, 60px);
+    padding: 30px 10px;
+    perspective: 800px;
+}
+
+.pumpkin {
+    font-size: clamp(70px, 13vw, 140px);
+    filter: drop-shadow(0 0 18px #ff650080);
+    animation: pumpkinFloat 3s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+
+.pumpkin:nth-child(2) {
+    animation-delay: -1.5s;
+    font-size: clamp(90px, 17vw, 175px);
+}
+
+@keyframes pumpkinFloat {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-17px) rotate(4deg); }
+}
+
+.ghost {
+    position: fixed;
+    z-index: 3;
+    bottom: -100px;
+    font-size: 45px;
+    opacity: .8;
+    pointer-events: none;
+    animation: ghostRise 12s linear infinite;
+}
+
+@keyframes ghostRise {
+    0% { transform: translateY(0) translateX(0) rotate(-8deg); opacity: 0; }
+    10% { opacity: .7; }
+    80% { opacity: .65; }
+    100% { transform: translateY(-115vh) translateX(80px) rotate(12deg); opacity: 0; }
+}
+
+.card {
+    position: relative;
+    z-index: 6;
+    width: min(90%, 620px);
+    margin: 5px auto 35px;
+    padding: 35px 24px;
+    background: linear-gradient(135deg, #21131de8, #0b080beF);
+    border: 1px solid #8d331f;
+    border-radius: 12px;
+    box-shadow: 0 0 35px #ff3c1820, inset 0 0 30px #ff3c1808;
+    transform-style: preserve-3d;
+    transition: transform .15s ease, box-shadow .3s;
+}
+
+.card h2 {
+    color: var(--orange);
+    font-family: "Creepster", cursive;
+    font-size: 38px;
+    margin-top: 0;
+}
+
+.card p {
+    line-height: 1.8;
+    color: #d6c7cc;
+}
+
+button {
+    position: relative;
+    z-index: 8;
+    margin: 8px;
+    padding: 14px 22px;
+    border: 1px solid #ff7a26;
+    border-radius: 4px;
+    background: #a3260a;
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: .25s;
+}
+
+button:hover {
+    background: #ff4c0b;
+    box-shadow: 0 0 25px #ff4c0b88;
+    transform: scale(1.06);
+}
+
+#secret {
+    display: none;
+    color: #ff5145;
+    font-family: "Creepster", cursive;
+    font-size: 30px;
+    margin-top: 22px;
+    animation: reveal .7s ease-out;
+}
+
+@keyframes reveal {
+    from { opacity: 0; transform: scale(.4); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#message {
+    min-height: 25px;
+    color: #ff8954;
+    margin-top: 15px;
+}
+
+footer {
+    position: relative;
+    z-index: 6;
+    padding: 15px;
+    color: #79666c;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+#toggleSound {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 30;
+    background: #171016;
+    border-color: #63404b;
+    padding: 10px;
+}
+
+@media (max-width: 500px) {
+    .moon { width: 70px; height: 70px; }
+    .scene { min-height: 220px; }
+    .card { padding: 25px 16px; }
+}
+</style>
 </head>
 
 <body>
 
-    <div class="card">
-        <h1>🎃 Happy Halloween! 👻</h1>
+<div id="flash"></div>
+<div class="moon"></div>
+<div class="mist"></div>
 
-        <p>Trick or treat!</p>
+<button id="toggleSound" onclick="toggleSound()">🔊 SOUND: OFF</button>
 
-        <p>Hope your Halloween is full of candy, spooky fun and scary surprises!</p>
+<header>
+    <div class="eyebrow">WELCOME TO THE DARK SIDE</div>
+    <h1>BOO!</h1>
+    <p class="subtitle">SOMETHING IS WATCHING YOU...</p>
+</header>
 
-        <button onclick="alert('BOO! 👻 Happy Halloween!')">
-            Click if you dare!
-        </button>
+<div class="scene">
+    <div class="pumpkin">🎃</div>
+    <div class="pumpkin">👻</div>
+    <div class="pumpkin">🎃</div>
+</div>
+
+<main class="card" id="card">
+    <h2>Happy Halloween</h2>
+    <p>
+        The night is dark.<br>
+        The spirits are awake.<br>
+        And something is hiding in the shadows...
+    </p>
+    <p>Are you brave enough to continue?</p>
+
+    <button onclick="boo()">👻 SUMMON THE SPIRIT</button>
+    <button onclick="revealSecret()">🕯️ OPEN THE CURSED MESSAGE</button>
+
+    <div id="secret">
+        👁️ YOU WERE WARNED... BOOOO! 👁️
     </div>
+
+    <div id="message"></div>
+</main>
+
+<footer>
+    ENTER IF YOU DARE · HAPPY HALLOWEEN · 31 OCTOBER
+</footer>
+
+<script>
+let soundOn = false;
+let audioContext;
+
+function toggleSound() {
+    soundOn = !soundOn;
+
+    document.getElementById("toggleSound").textContent =
+        soundOn ? "🔊 SOUND: ON" : "🔇 SOUND: OFF";
+
+    if (soundOn) {
+        playTone(100, 0.15);
+    }
+}
+
+function playTone(frequency, duration, type = "sawtooth") {
+    if (!soundOn) return;
+
+    try {
+        audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(
+            Math.max(30, frequency / 3),
+            audioContext.currentTime + duration
+        );
+
+        gain.gain.setValueAtTime(0.18, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+            0.001, audioContext.currentTime + duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+    } catch (error) {
+        console.log("Audio could not start.", error);
+    }
+}
+
+function boo() {
+    document.getElementById("flash").classList.remove("bolt");
+    void document.getElementById("flash").offsetWidth;
+    document.getElementById("flash").classList.add("bolt");
+
+    document.getElementById("message").textContent =
+        "BOOOOO! THE SPIRITS HAVE AWAKENED! 👻";
+
+    if (soundOn) {
+        playTone(220, 0.8);
+        setTimeout(() => playTone(90, 0.7), 180);
+    }
+}
+
+function revealSecret() {
+    const secret = document.getElementById("secret");
+    secret.style.display = "block";
+
+    document.getElementById("message").textContent =
+        "You opened the cursed message...";
+
+    if (soundOn) {
+        playTone(150, 0.6);
+    }
+}
+
+// 3D effect following the mouse
+const card = document.getElementById("card");
+
+document.addEventListener("mousemove", event => {
+    if (window.innerWidth < 700) return;
+
+    const x = (event.clientX / window.innerWidth - 0.5);
+    const y = (event.clientY / window.innerHeight - 0.5);
+
+    card.style.transform =
+        `rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+});
+
+document.addEventListener("mouseleave", () => {
+    card.style.transform = "rotateY(0deg) rotateX(0deg)";
+});
+
+// Floating ghosts
+for (let i = 0; i < 9; i++) {
+    const ghost = document.createElement("div");
+    ghost.className = "ghost";
+    ghost.textContent = i % 2 === 0 ? "👻" : "🦇";
+    ghost.style.left = Math.random() * 100 + "vw";
+    ghost.style.animationDelay = Math.random() * 12 + "s";
+    ghost.style.animationDuration = (10 + Math.random() * 10) + "s";
+    document.body.appendChild(ghost);
+}
+</script>
 
 </body>
 </html>
