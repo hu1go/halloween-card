@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -5,33 +6,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Halloween 2026</title>
 
-<!-- ==================================================
-     CSS: TYPSNITT
-     ================================================== -->
+<!-- CSS: TYPSNITT -->
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
 
 <style>
-/* ==================================================
-   CSS: GRUNDINSTÄLLNINGAR
-   ================================================== */
+/* =================================================
+   CSS 1: GRUNDINSTÄLLNINGAR
+   ================================================= */
 * {
     box-sizing: border-box;
 }
 
-:root {
-    --red: #a40000;
-    --dark-red: #450000;
-    --black: #050505;
-    --paper: #c4b9a4;
-}
-
 body {
     margin: 0;
-    min-height: 100vh;
-    background: #050505;
+    background: #030303;
     color: #ddd;
     font-family: "Special Elite", monospace;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 button {
@@ -40,260 +31,133 @@ button {
 }
 
 button:focus-visible {
-    outline: 2px solid #e33;
+    outline: 2px solid #f33;
     outline-offset: 4px;
 }
 
-/* ==================================================
-   CSS: MÖRKT 90-TALSRUM
-   ================================================== */
+/* =================================================
+   CSS 2: RUMMET OCH BAKGRUNDSBILDEN
+   ================================================= */
 #room {
     position: fixed;
     inset: 0;
     z-index: 10;
     overflow: hidden;
-    background:
-        radial-gradient(ellipse at 50% 45%, #292722 0%, #111 42%, #020202 100%);
-    transition: opacity 2s;
+    background: #020407;
+    transition: opacity 1.4s;
 }
 
-/* Vägg och gammal tapet */
-.wallpaper {
+#roomImage {
     position: absolute;
-    inset: 0 0 30%;
-    opacity: .45;
-    background:
-        repeating-linear-gradient(90deg,
-            transparent 0 68px,
-            #29231e 69px 71px),
-        repeating-linear-gradient(0deg,
-            transparent 0 55px,
-            #171512 56px 58px);
-}
-
-/* Golv */
-.floor {
-    position: absolute;
-    bottom: 0;
     width: 100%;
-    height: 32%;
-    background: repeating-linear-gradient(
-        90deg, #17120f 0 100px, #241b16 101px 104px
-    );
-    transform: perspective(300px) rotateX(8deg);
-    transform-origin: bottom;
-    border-top: 4px solid #30241b;
-}
-
-/* Svagt ljus från taklampan */
-.lamp {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 300px;
-    height: 360px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse, #51422a20, transparent 70%);
-}
-
-.lamp::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    height: 65px;
-    border-left: 2px solid #393127;
-}
-
-.lamp::after {
-    content: "";
-    position: absolute;
-    top: 60px;
-    left: calc(50% - 28px);
-    width: 56px;
-    height: 13px;
-    border-radius: 50%;
-    background: #6d5c3c;
-    box-shadow: 0 0 35px 13px #8d73401c;
-}
-
-/* Mörkt fönster */
-.window {
-    position: absolute;
-    left: 7%;
-    top: 17%;
-    width: 150px;
-    height: 210px;
-    background: #080b0e;
-    border: 8px solid #241b15;
-    box-shadow: inset 0 0 35px #101a20;
-}
-
-.window::before,
-.window::after {
-    content: "";
-    position: absolute;
-    background: #332820;
-}
-
-.window::before {
-    width: 5px;
     height: 100%;
-    left: 50%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1);
+    transform-origin: 44% 45%;
+    transition: transform 4s cubic-bezier(.55, 0, .8, .25);
 }
 
-.window::after {
-    height: 5px;
-    width: 100%;
-    top: 50%;
+/* Zooma mot TV:n när JavaScript lägger till klassen */
+#room.zooming #roomImage {
+    transform: scale(3.5);
 }
 
-/* ==================================================
-   CSS: DIMMA SOM KOMMER OCH GÅR
-   ================================================== */
+/* Mörka kanter gör rummet mer filmiskt */
+#room::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at center,
+            transparent 35%, #000b 100%);
+}
+
+/* =================================================
+   CSS 3: RÖRLIG GRÅ DIMMA
+   ================================================= */
 .fog {
     position: absolute;
-    bottom: 0;
+    z-index: 2;
     left: -40%;
+    bottom: -5%;
     width: 180%;
-    height: 38%;
+    height: 45%;
+    opacity: .28;
     pointer-events: none;
-    opacity: .22;
-    filter: blur(25px);
+    filter: blur(28px);
+
     background:
-        radial-gradient(ellipse at 20% 70%, #b4b4b455, transparent 40%),
-        radial-gradient(ellipse at 60% 80%, #aaa9a944, transparent 45%),
-        radial-gradient(ellipse at 85% 65%, #aaa9a944, transparent 35%);
-    animation: fogMove 19s ease-in-out infinite alternate;
+        radial-gradient(ellipse at 20% 65%,
+            #c2c5cc88, transparent 45%),
+        radial-gradient(ellipse at 65% 75%,
+            #aeb4bd77, transparent 45%),
+        radial-gradient(ellipse at 90% 60%,
+            #c6c6c655, transparent 35%);
+
+    animation: fogDrift 17s ease-in-out infinite alternate;
 }
 
-.fog.second {
-    bottom: 12%;
-    opacity: .12;
-    animation-duration: 27s;
+.fog.two {
+    bottom: 8%;
+    opacity: .14;
+    animation-duration: 25s;
     animation-direction: alternate-reverse;
 }
 
-@keyframes fogMove {
-    from { transform: translateX(-8%) translateY(10px); }
-    to   { transform: translateX(12%) translateY(-30px); }
+@keyframes fogDrift {
+    from { transform: translate(-7%, 15px); }
+    to   { transform: translate(8%, -25px); }
 }
 
-/* ==================================================
-   CSS: GAMMALT BORD OCH TJOCK-TV
-   ================================================== */
-.desk {
-    position: absolute;
-    left: 50%;
-    bottom: 13%;
-    width: min(620px, 86vw);
-    height: 24px;
-    transform: translateX(-50%);
-    background: linear-gradient(#554033, #211711);
-    border: 3px solid #120e0b;
-    box-shadow: 0 10px 25px #000;
-}
-
-.desk::before,
-.desk::after {
-    content: "";
-    position: absolute;
-    top: 20px;
-    width: 18px;
-    height: 150px;
-    background: #241911;
-}
-
-.desk::before { left: 35px; }
-.desk::after { right: 35px; }
-
-.monitor {
-    position: absolute;
-    bottom: 15%;
-    left: 50%;
-    width: min(330px, 70vw);
-    height: 230px;
-    transform: translateX(-50%);
-    border: 13px solid #292622;
-    border-radius: 25px 25px 17px 17px;
-    background: #101010;
-    box-shadow: 0 0 30px #000, inset 0 0 15px #000;
+/* =================================================
+   CSS 4: SVART ÖVERGÅNG
+   ================================================= */
+#blackout {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: #000;
     opacity: 0;
-    transition: opacity 2s;
+    transition: opacity 1s;
 }
 
-.monitor.show {
+#blackout.visible {
+    display: block;
     opacity: 1;
 }
 
-.monitor-screen {
-    position: absolute;
-    inset: 9px;
-    overflow: hidden;
+/* =================================================
+   CSS 5: DATORNS SKRIVBORD
+   ================================================= */
+#desktop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    padding: 22px;
     background:
-        repeating-linear-gradient(
-            0deg, #111 0 2px, #171717 3px 4px
-        ),
-        #090d0b;
-    border-radius: 10px;
-    box-shadow: inset 0 0 30px #000;
+        radial-gradient(ellipse at center,
+            #20251d, #080a08 75%);
 }
 
-.monitor-screen::after {
+/* Gamla skärmstreck */
+#desktop::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: #9bffce05;
-    animation: screenFlicker 5s infinite;
-}
-
-@keyframes screenFlicker {
-    0%, 95%, 98%, 100% { opacity: 1; }
-    96% { opacity: .6; }
-    97% { opacity: .85; }
-}
-
-.monitor-bottom {
-    position: absolute;
-    bottom: -28px;
-    left: 30%;
-    width: 40%;
-    height: 18px;
-    background: #34312d;
-}
-
-.keyboard {
-    position: absolute;
-    bottom: 13%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(280px, 68vw);
-    height: 23px;
+    opacity: .12;
     background: repeating-linear-gradient(
-        90deg, #37322c 0 12px, #141311 13px 15px
+        0deg, transparent 0 3px, #000 4px 5px
     );
-    border: 3px solid #16120f;
-    border-radius: 4px;
-    opacity: 0;
-    transition: opacity 2s;
-}
-
-.keyboard.show { opacity: 1; }
-
-/* ==================================================
-   CSS: DATORNS SKRIVBORD OCH APPAR
-   ================================================== */
-#desktop {
-    display: none;
-    position: absolute;
-    inset: 0;
-    padding: 18px;
-    background:
-        radial-gradient(ellipse at center, #20251e, #070907 80%);
 }
 
 .desktop-icons {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -301,7 +165,7 @@ button:focus-visible {
 }
 
 .app-icon {
-    width: 110px;
+    width: 120px;
     min-height: 105px;
     padding: 10px 5px;
     border: 1px solid transparent;
@@ -313,48 +177,47 @@ button:focus-visible {
 
 .app-icon:hover {
     background: #ffffff12;
-    border-color: #ffffff33;
+    border-color: #ffffff44;
 }
 
 .app-image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
     margin: 0 auto 8px;
-    width: 55px;
-    height: 55px;
     border: 2px solid #4c4c4c;
     background: #101010;
     box-shadow: 0 0 12px #000;
-    font-size: 29px;
+    font-size: 30px;
 }
 
 .app-icon span {
     display: block;
     font-size: 12px;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .app-image.halloween {
-    border-color: #761010;
-    color: #c21c1c;
+    color: #e76c16;
+    border-color: #8c4016;
 }
 
 .app-image.danger {
-    border-color: #a30000;
     color: #f22;
+    border-color: #a00000;
 }
 
-/* ==================================================
-   CSS: GEMENSAMMA KORT OCH KNAPPAR
-   ================================================== */
+/* =================================================
+   CSS 6: GEMENSAMMA SIDOR
+   ================================================= */
 .page {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 20;
     overflow-y: auto;
-    padding: 25px;
+    padding: 20px;
     background: #050505;
 }
 
@@ -365,6 +228,7 @@ button:focus-visible {
 }
 
 .primary-button {
+    margin: 8px;
     padding: 12px 18px;
     border: 1px solid #831111;
     background: #160707;
@@ -377,9 +241,9 @@ button:focus-visible {
     box-shadow: 0 0 18px #b0000044;
 }
 
-/* ==================================================
-   CSS: VANLIGT HALLOWEENKORT
-   ================================================== */
+/* =================================================
+   CSS 7: VANLIGT HALLOWEENKORT
+   ================================================= */
 #normalCard {
     background:
         radial-gradient(ellipse at center, #25120f, #050505 75%);
@@ -388,16 +252,14 @@ button:focus-visible {
 .card-paper {
     position: relative;
     width: min(700px, 94vw);
-    min-height: 460px;
-    padding: 35px 25px;
+    min-height: 450px;
+    padding: 32px 22px;
     overflow: hidden;
     border: 3px solid #561010;
-    outline: 1px solid #1b0808;
-    outline-offset: 7px;
     text-align: center;
     background:
-        radial-gradient(ellipse at 50% 40%, #321716, #110c0b 75%);
-    box-shadow: 0 0 50px #7d000022;
+        radial-gradient(ellipse at center, #321716, #100a09 80%);
+    box-shadow: 0 0 50px #7d000033;
 }
 
 .card-paper::before {
@@ -408,20 +270,9 @@ button:focus-visible {
     pointer-events: none;
 }
 
-.blood-top {
-    height: 35px;
-    margin: -35px -25px 15px;
-    background:
-        radial-gradient(ellipse at 10% 0%, #7d0000 0 20%, transparent 21%),
-        radial-gradient(ellipse at 35% 0%, #560000 0 25%, transparent 26%),
-        radial-gradient(ellipse at 60% 0%, #8b0000 0 22%, transparent 23%),
-        radial-gradient(ellipse at 85% 0%, #650000 0 25%, transparent 26%);
-}
-
 .card-paper h1 {
-    margin: 20px 0;
     color: #c21b1b;
-    font: clamp(44px, 9vw, 80px) "Creepster", cursive;
+    font: clamp(42px, 9vw, 78px) "Creepster", cursive;
     text-shadow: 3px 3px #260000, 0 0 18px #8d000055;
 }
 
@@ -430,131 +281,123 @@ button:focus-visible {
     color: #c4b9a4;
 }
 
-.clown-placeholder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: min(280px, 80%);
-    min-height: 160px;
-    margin: 22px auto;
-    border: 2px dashed #733;
-    color: #a99b8b;
-    background: #0b0808;
-    padding: 15px;
+/* CSS: RÖDA DROPPAR LÄNGS KORTETS ÖVERKANT */
+.blood {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background:
+        radial-gradient(ellipse at 12% 0%, #7d0000 0 18%, transparent 20%),
+        radial-gradient(ellipse at 34% 0%, #8c0000 0 24%, transparent 26%),
+        radial-gradient(ellipse at 58% 0%, #600000 0 20%, transparent 22%),
+        radial-gradient(ellipse at 82% 0%, #850000 0 24%, transparent 26%);
 }
 
-/* ==================================================
-   CSS: HEMLIGA SKRÄMSELSIDAN
-   ================================================== */
+/* =================================================
+   CSS 8: BILDER I KORTEN
+   ================================================= */
+.card-picture {
+    display: block;
+    width: min(300px, 85%);
+    max-height: 270px;
+    object-fit: cover;
+    margin: 22px auto;
+    border: 1px solid #662020;
+    box-shadow: 0 0 25px #000;
+}
+
+/* =================================================
+   CSS 9: HEMLIGA SKRÄCKSIDAN
+   ================================================= */
 #horrorPage {
     background:
-        radial-gradient(ellipse at center, #160000, #020202 70%);
+        radial-gradient(ellipse at center, #180000, #020202 75%);
 }
 
 .horror-content {
-    width: min(1050px, 96vw);
+    width: min(900px, 96vw);
     text-align: center;
 }
 
 .horror-title {
-    color: #d00000;
-    font: clamp(35px, 7vw, 72px) "Creepster", cursive;
-    text-shadow: 0 0 20px #c00, 3px 3px #260000;
-    animation: titlePulse 2.8s infinite;
+    color: #c90000;
+    font: clamp(35px, 7vw, 70px) "Creepster", cursive;
+    text-shadow: 0 0 20px #c00;
+    animation: titlePulse 3s infinite;
 }
 
 @keyframes titlePulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: .72; }
+    50% { opacity: .7; }
 }
 
-.character-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin: 28px 0;
-}
-
-.character {
-    min-height: 125px;
-    padding: 12px;
-    border: 1px solid #360707;
-    background: #090606;
-    color: #ddd;
-    animation: appear 1s both;
-}
-
-.character .picture-placeholder {
-    min-height: 65px;
-    display: grid;
-    place-items: center;
-    margin-bottom: 9px;
-    color: #9a7777;
-    border: 1px dashed #511;
-    background: #110808;
-    font-size: 12px;
-}
-
-@keyframes appear {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Skrämselfigurer flyger in från kanterna */
-.jump-scare {
+/* =================================================
+   CSS 10: SKRÄCKBILDER SOM DYKER UPP
+   ================================================= */
+#scareLayer {
     position: fixed;
+    inset: 0;
     z-index: 80;
-    top: 50%;
-    left: 50%;
+    pointer-events: none;
+}
+
+.scare-image {
+    position: absolute;
     width: min(300px, 70vw);
-    min-height: 170px;
-    padding: 15px;
-    display: none;
-    place-items: center;
-    transform: translate(-50%, -50%);
-    border: 2px solid #a00000;
-    background: #080000;
-    color: #eee;
-    text-align: center;
-    box-shadow: 0 0 70px #b00000;
-    font-size: 20px;
+    max-height: 55vh;
+    object-fit: contain;
+    filter: contrast(1.3) brightness(.85);
+    box-shadow: 0 0 45px #a00000;
+    animation: scareIn .7s both;
 }
 
-.jump-scare.show {
-    display: grid;
-    animation: scareFlash .65s both;
+@keyframes scareIn {
+    0% {
+        opacity: 0;
+        transform: scale(.15);
+    }
+    35% {
+        opacity: 1;
+        transform: scale(1.12);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-@keyframes scareFlash {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
-    30% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
-    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-/* ==================================================
-   CSS: VARNING OCH FAKE VIRUSPOPUPS
-   ================================================== */
+/* =================================================
+   CSS 11: VARNINGSMEDDELANDE
+   ================================================= */
 .warning-box {
-    position: relative;
-    z-index: 90;
-    width: min(540px, 95%);
+    width: min(530px, 95%);
     margin: 25px auto;
-    padding: 28px 18px;
+    padding: 25px 16px;
     border: 2px solid #8e1111;
-    background:
-        linear-gradient(135deg, #211010, #050505);
+    background: linear-gradient(135deg, #211010, #050505);
     box-shadow: 0 0 35px #90000033;
 }
 
 .warning-box h2 {
     color: #f0dddd;
-    font: clamp(25px, 5vw, 43px) "Creepster", cursive;
+    font: clamp(26px, 5vw, 42px) "Creepster", cursive;
+}
+
+/* =================================================
+   CSS 12: FAKE VIRUSPOPUPS
+   ================================================= */
+#popupContainer {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
 }
 
 .fake-popup {
-    position: fixed;
-    z-index: 100;
-    width: min(280px, 80vw);
+    position: absolute;
+    width: min(270px, 80vw);
     border: 2px solid #777;
     background: #d5d5d5;
     color: #111;
@@ -575,39 +418,33 @@ button:focus-visible {
     line-height: 1.6;
 }
 
-.popup-message strong {
-    color: #b00000;
-}
-
 @keyframes popupIn {
     from { opacity: 0; transform: scale(.6); }
     to { opacity: 1; transform: scale(1); }
 }
 
-/* ==================================================
-   CSS: SLUTKORT OCH DEN ÄNNU LÄSKIGARE SIDAN
-   ================================================== */
+/* =================================================
+   CSS 13: SLUTKORT
+   ================================================= */
 #endingPage {
-    background:
-        radial-gradient(ellipse at 50% 40%, #350000, #050000 70%);
+    background: radial-gradient(ellipse at center, #350000, #050000 75%);
 }
 
 .ending-card {
-    max-width: 760px;
-    width: 95%;
+    width: min(750px, 95%);
     text-align: center;
 }
 
-.ending-card h1 {
+.ending-card h1,
+.secret-paper h1 {
     color: #e00000;
-    font: clamp(48px, 10vw, 100px) "Creepster", cursive;
+    font: clamp(48px, 10vw, 95px) "Creepster", cursive;
     text-shadow: 0 0 28px #d00000;
 }
 
 .symbol-button {
     width: 70px;
     height: 70px;
-    margin-top: 20px;
     border-radius: 50%;
     border: 1px solid #a00000;
     background: #100000;
@@ -617,98 +454,50 @@ button:focus-visible {
 }
 
 #secretCard {
-    background:
-        radial-gradient(ellipse at center, #280000, #000 80%);
+    background: radial-gradient(ellipse at center, #280000, #000 80%);
 }
 
 .secret-paper {
     max-width: 720px;
-    padding: 30px;
+    padding: 28px;
     border: 3px solid #800000;
     background: #090404;
     text-align: center;
     box-shadow: 0 0 60px #a0000033;
 }
 
-.secret-paper h1 {
-    color: #c00;
-    font: clamp(45px, 9vw, 85px) "Creepster", cursive;
-}
-
-.secret-picture {
-    width: 100%;
-    min-height: 190px;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    border: 1px dashed #633;
-    color: #a78c8c;
-    background: #120505;
-}
-
-/* ==================================================
-   CSS: MOBILANPASSNING
-   ================================================== */
+/* =================================================
+   CSS 14: MOBILANPASSNING
+   ================================================= */
 @media (max-width: 600px) {
-    .monitor {
-        height: 190px;
-        bottom: 18%;
-    }
-
-    .keyboard {
-        bottom: 15%;
-    }
-
-    .character-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .page {
-        padding: 12px;
-    }
-
-    .card-paper {
-        padding: 25px 16px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-    }
+    .page { padding: 10px; }
+    .card-paper { padding: 25px 15px; }
+    #desktop { padding: 12px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ==================================================
-     HTML: INTRODUKTION I DET GAMLA RUMMET
-     ================================================== -->
+<!-- =================================================
+     HTML 1: RUMSBILDEN
+     ================================================= -->
 <section id="room">
-    <div class="wallpaper"></div>
-    <div class="lamp"></div>
-    <div class="window"></div>
-    <div class="floor"></div>
+    <!-- Lägg din rumsbild i images/old-room.jpg -->
+    <img id="roomImage"
+         src="images/old-room.jpg"
+         alt="Mörkt rum med gammal tjock-TV">
 
     <div class="fog"></div>
-    <div class="fog second"></div>
-
-    <div class="desk"></div>
-
-    <div class="monitor" id="monitor">
-        <div class="monitor-screen"></div>
-        <div class="monitor-bottom"></div>
-    </div>
-
-    <div class="keyboard" id="keyboard"></div>
+    <div class="fog two"></div>
 </section>
 
-<!-- ==================================================
-     HTML: DATORNS SKRIVBORD MED TVÅ APPAR
-     ================================================== -->
+<!-- HTML: SVART ÖVERGÅNG MELLAN RUM OCH DATOR -->
+<div id="blackout"></div>
+
+<!-- =================================================
+     HTML 2: DATORNS SKRIVBORD
+     ================================================= -->
 <section id="desktop">
     <div class="desktop-icons">
 
@@ -725,12 +514,12 @@ button:focus-visible {
     </div>
 </section>
 
-<!-- ==================================================
-     HTML: APP 1 - VANLIGT HALLOWEENKORT
-     ================================================== -->
+<!-- =================================================
+     HTML 3: VANLIGT HALLOWEENKORT
+     ================================================= -->
 <section class="page" id="normalCard">
     <div class="card-paper">
-        <div class="blood-top"></div>
+        <div class="blood"></div>
 
         <h1>Spooky Halloween</h1>
 
@@ -739,15 +528,13 @@ button:focus-visible {
             Håll dig nära ljuset...
         </p>
 
-        <!-- BYT UT DENNA PLATSHÅLLARE MOT DIN CLOWNBILD -->
-        <div class="clown-placeholder">
-            BILD CLOWN<br>
-            Lägg din bild här
-        </div>
+        <!-- BILD: images/halloween-clown.jpg -->
+        <img class="card-picture"
+             src="images/halloween-clown.jpg"
+             alt="Läskig clown"
+             onerror="this.style.display='none'">
 
-        <p>
-            Önskar dig en riktigt kuslig Halloween 2026.
-        </p>
+        <p>Önskar dig en riktigt kuslig Halloween 2026.</p>
 
         <button class="primary-button" onclick="closePages()">
             Tillbaka till datorn
@@ -755,73 +542,20 @@ button:focus-visible {
     </div>
 </section>
 
-<!-- ==================================================
-     HTML: APP 2 - RÖR EJ
-     ================================================== -->
+<!-- =================================================
+     HTML 4: HEMLIGA SKRÄCKSIDAN
+     ================================================= -->
 <section class="page" id="horrorPage">
     <div class="horror-content">
         <h1 class="horror-title">DU SKULLE INTE HA TRYCKT.</h1>
 
-        <p>Systemet har vaknat. Det finns ingen vanlig utgång.</p>
-
-        <!--
-        BYT UT PLATSHÅLLARNA MOT DINA EGNA BILDER.
-        En bild per skräckfigur. Bildnamnen kan ändras senare.
-        -->
-        <div class="character-grid">
-
-            <div class="character">
-                <div class="picture-placeholder">BILD MICHAEL MYERS</div>
-                Michael Myers
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD JASON VOORHEES</div>
-                Jason Voorhees
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD FREDDY KRUEGER</div>
-                Freddy Krueger
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD CHUCKY</div>
-                Chucky
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD LEATHERFACE</div>
-                Leatherface
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD PENNYWISE</div>
-                Pennywise
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD GHOSTFACE</div>
-                Ghostface
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD PINHEAD</div>
-                Pinhead
-            </div>
-
-            <div class="character">
-                <div class="picture-placeholder">BILD COUNT DRACULA</div>
-                Count Dracula
-            </div>
-
-        </div>
+        <p>Systemet har vaknat.</p>
 
         <div class="warning-box">
             <h2>JAG VARNADE DIG ATT INTE RÖRA!</h2>
             <p>Nu är det för sent...</p>
 
-            <!-- Knappen går inte tillbaka. Den spelar bara ett hånskratt. -->
+            <!-- Den här knappen går inte tillbaka -->
             <button class="primary-button" onclick="evilLaugh()">
                 Gå tillbaka
             </button>
@@ -831,27 +565,24 @@ button:focus-visible {
     </div>
 </section>
 
-<!-- Skrämseleffekter visas ovanpå sidan -->
-<div class="jump-scare" id="jumpScare" aria-live="assertive"></div>
+<!-- HTML: BILDERNA SOM DYKER UPP PLACERAS HÄR -->
+<div id="scareLayer"></div>
 
-<!-- ==================================================
-     HTML: FAKE VIRUSVARNINGAR
-     ================================================== -->
+<!-- HTML: FAKE VIRUSPOPUPS -->
 <div id="popupContainer"></div>
 
-<!-- ==================================================
-     HTML: SLUTET - GLAD HALLOWEEN
-     ================================================== -->
+<!-- =================================================
+     HTML 5: SLUTKORT
+     ================================================= -->
 <section class="page" id="endingPage">
     <div class="ending-card">
         <h1>Glad Halloween</h1>
         <p>Du klarade det. Eller gjorde du verkligen det?</p>
-
         <p>Det finns en sak kvar att upptäcka.</p>
 
         <button class="symbol-button"
                 onclick="openSecretCard()"
-                aria-label="Öppna den hemliga sidan">
+                aria-label="Öppna det hemliga kortet">
             ☠
         </button>
 
@@ -859,17 +590,18 @@ button:focus-visible {
     </div>
 </section>
 
-<!-- ==================================================
-     HTML: HEMLIGT OCH ÄNNU LÄSKIGARE KORT
-     ================================================== -->
+<!-- =================================================
+     HTML 6: DET ALLRA HEMLIGASTE KORTET
+     ================================================= -->
 <section class="page" id="secretCard">
     <div class="secret-paper">
         <h1>Du är inte ensam.</h1>
 
-        <!-- BYT UT DENNA PLATSHÅLLARE MOT EN ÄNNU LÄSKIGARE BILD -->
-        <div class="secret-picture">
-            BILD CLOWN / SPOKE / SKRÄCKSCEN
-        </div>
+        <!-- BILD: images/final-halloween.jpg -->
+        <img class="card-picture"
+             src="images/final-halloween.jpg"
+             alt="Det hemliga Halloweenkortet"
+             onerror="this.style.display='none'">
 
         <p>
             Du kan stänga sidan.<br>
@@ -882,15 +614,40 @@ button:focus-visible {
     </div>
 </section>
 
-<!-- ==================================================
-     JAVASCRIPT: INTRODUKTION OCH START
-     ================================================== -->
+<!-- =================================================
+     JAVASCRIPT 1: START OCH ZOOMNING
+     ================================================= -->
 <script>
-/* ==================================================
-   JAVASCRIPT: HJÄLPFUNKTIONER
-   ================================================== */
+window.addEventListener("load", () => {
+    // Vänta 10 sekunder innan zoomningen börjar.
+    setTimeout(() => {
+        document.getElementById("room").classList.add("zooming");
+    }, 10000);
 
-// Hitta en sida med dess ID och visa den.
+    // Gå mot svart efter att zoomningen fått börja.
+    setTimeout(() => {
+        const blackout = document.getElementById("blackout");
+        blackout.style.display = "block";
+
+        requestAnimationFrame(() => {
+            blackout.classList.add("visible");
+        });
+
+        setTimeout(() => {
+            document.getElementById("room").style.display = "none";
+            document.getElementById("desktop").style.display = "block";
+            blackout.classList.remove("visible");
+
+            setTimeout(() => {
+                blackout.style.display = "none";
+            }, 1100);
+        }, 1100);
+    }, 14000);
+});
+
+/* =================================================
+   JAVASCRIPT 2: VÄXLA MELLAN SIDOR
+   ================================================= */
 function showPage(id) {
     document.querySelectorAll(".page").forEach(page => {
         page.classList.remove("active");
@@ -899,7 +656,10 @@ function showPage(id) {
     document.getElementById(id).classList.add("active");
 }
 
-// Stäng alla öppna kort och visa datorn igen.
+function openNormalCard() {
+    showPage("normalCard");
+}
+
 function closePages() {
     document.querySelectorAll(".page").forEach(page => {
         page.classList.remove("active");
@@ -908,42 +668,9 @@ function closePages() {
     document.getElementById("desktop").style.display = "block";
 }
 
-/* ==================================================
-   JAVASCRIPT: EFTER 10 SEKUNDER VISAS DATORN
-   ================================================== */
-
-window.addEventListener("load", () => {
-    // Datorn tänds efter cirka 10 sekunder.
-    setTimeout(() => {
-        document.getElementById("monitor").classList.add("show");
-        document.getElementById("keyboard").classList.add("show");
-    }, 3500);
-
-    // Rummet försvinner långsamt och skrivbordet visas.
-    setTimeout(() => {
-        document.getElementById("room").style.opacity = "0";
-
-        setTimeout(() => {
-            document.getElementById("room").style.display = "none";
-            document.getElementById("desktop").style.display = "block";
-        }, 2000);
-    }, 10000);
-});
-
-/* ==================================================
-   JAVASCRIPT: APP 1 - ÖPPNA HALLOWEENKORTET
-   ================================================== */
-
-function openNormalCard() {
-    showPage("normalCard");
-}
-
-/* ==================================================
-   JAVASCRIPT: LJUD
-   Ljuden skapas med webbläsarens ljudfunktion.
-   Ingen separat ljudfil behövs.
-   ================================================== */
-
+/* =================================================
+   JAVASCRIPT 3: LJUD SOM SKAPAS I WEBBLÄSAREN
+   ================================================= */
 let audioContext;
 
 function getAudioContext() {
@@ -958,7 +685,6 @@ function getAudioContext() {
     return audioContext;
 }
 
-// Ett kort, mörkt ljud.
 function playCreepySound(frequency = 65, duration = 1) {
     try {
         const ctx = getAudioContext();
@@ -972,12 +698,9 @@ function playCreepySound(frequency = 65, duration = 1) {
             ctx.currentTime + duration
         );
 
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.08);
-        gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            ctx.currentTime + duration
-        );
+        gain.gain.setValueAtTime(.0001, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(.10, ctx.currentTime + .08);
+        gain.gain.linearRampToValueAtTime(.0001, ctx.currentTime + duration);
 
         oscillator.connect(gain);
         gain.connect(ctx.destination);
@@ -989,7 +712,9 @@ function playCreepySound(frequency = 65, duration = 1) {
     }
 }
 
-// Tre olika syntetiska hånskratt.
+/* =================================================
+   JAVASCRIPT 4: HÅNSKRATT
+   ================================================= */
 function evilLaugh() {
     const laughs = [
         "HA... HA... HAAAAA...",
@@ -997,13 +722,12 @@ function evilLaugh() {
         "HAHAHAHAHA... FÖR SENT!"
     ];
 
-    const text = laughs[Math.floor(Math.random() * laughs.length)];
-    document.getElementById("laughText").textContent = text;
+    document.getElementById("laughText").textContent =
+        laughs[Math.floor(Math.random() * laughs.length)];
 
-    // Flera toner gör ljudet mer obehagligt.
-    playCreepySound(100, 0.5);
-    setTimeout(() => playCreepySound(75, 0.7), 250);
-    setTimeout(() => playCreepySound(120, 0.35), 550);
+    playCreepySound(100, .5);
+    setTimeout(() => playCreepySound(75, .7), 250);
+    setTimeout(() => playCreepySound(120, .35), 550);
 }
 
 function playFinalLaugh() {
@@ -1011,24 +735,20 @@ function playFinalLaugh() {
     setTimeout(() => playCreepySound(90, 1.1), 700);
 }
 
-/* ==================================================
-   JAVASCRIPT: APP 2 - RÖR EJ!
-   Klicka -> vänta 5 sekunder -> skräcksidan startar.
-   ================================================== */
-
+/* =================================================
+   JAVASCRIPT 5: RÖR EJ-APPEN
+   ================================================= */
 let horrorStarted = false;
 
 function startForbiddenApp() {
-    // Förhindrar att appen startas flera gånger.
     if (horrorStarted) return;
     horrorStarted = true;
 
-    const desktop = document.getElementById("desktop");
-    desktop.style.display = "none";
+    document.getElementById("desktop").style.display = "none";
 
-    // En mörk laddningsskärm.
     const loading = document.createElement("div");
     loading.id = "loadingScreen";
+
     loading.style.cssText = `
         position: fixed;
         inset: 0;
@@ -1049,10 +769,8 @@ function startForbiddenApp() {
     `;
 
     document.body.appendChild(loading);
-
     playCreepySound(45, 2);
 
-    // Efter fem sekunder börjar skräckdelen.
     setTimeout(() => {
         loading.remove();
         showPage("horrorPage");
@@ -1060,91 +778,61 @@ function startForbiddenApp() {
     }, 5000);
 }
 
-/* ==================================================
-   JAVASCRIPT: FIGURER DYKER UPP FRÅN OLIKA HÅLL
-   ================================================== */
-
-const scareNames = [
-    "MICHAEL MYERS",
-    "JASON VOORHEES",
-    "FREDDY KRUEGER",
-    "CHUCKY",
-    "LEATHERFACE",
-    "PENNYWISE",
-    "GHOSTFACE",
-    "PINHEAD",
-    "COUNT DRACULA"
+/* =================================================
+   JAVASCRIPT 6: SKRÄCKBILDER
+   Lägg bilderna i mappen images.
+   ================================================= */
+const scareImages = [
+    "images/pennywise.jpg",
+    "images/ghostface.jpg",
+    "images/michael-myers.jpg",
+    "images/chucky.jpg",
+    "images/horror-face.jpg"
 ];
 
 let scareIndex = 0;
 
 function showJumpScare() {
-    const scare = document.getElementById("jumpScare");
-    const name = scareNames[scareIndex % scareNames.length];
+    const layer = document.getElementById("scareLayer");
+    const src = scareImages[scareIndex % scareImages.length];
     scareIndex++;
 
-    // Byt gärna ut texten mot en bild när du har lagt till dina bilder.
-    scare.textContent = "BILD / SKRÄCKFIGUR: " + name;
+    const img = document.createElement("img");
+    img.className = "scare-image";
+    img.src = src;
+    img.alt = "Skräckbild";
 
     const positions = [
-        { top: "12%", left: "15%" },
-        { top: "20%", left: "80%" },
-        { top: "75%", left: "18%" },
-        { top: "80%", left: "80%" },
-        { top: "48%", left: "50%" },
-        { top: "15%", left: "50%" }
+        { top: "5%", left: "4%" },
+        { top: "8%", right: "4%" },
+        { bottom: "5%", left: "5%" },
+        { bottom: "5%", right: "5%" },
+        { top: "20%", left: "35%" }
     ];
 
-    const position = positions[
-        Math.floor(Math.random() * positions.length)
-    ];
+    Object.assign(
+        img.style,
+        positions[Math.floor(Math.random() * positions.length)]
+    );
 
-    scare.style.top = position.top;
-    scare.style.left = position.left;
+    img.onerror = () => img.remove();
+    layer.appendChild(img);
 
-    scare.classList.remove("show");
+    playCreepySound(70 + Math.random() * 90, .65);
 
-    // Tvinga webbläsaren att starta animationen på nytt.
-    void scare.offsetWidth;
-
-    scare.classList.add("show");
-    playCreepySound(65 + Math.random() * 80, 0.65);
-
-    setTimeout(() => {
-        scare.classList.remove("show");
-    }, 900);
+    setTimeout(() => img.remove(), 950);
 }
 
-/* ==================================================
-   JAVASCRIPT: FAKE VIRUSPOPUPS
-   Dessa är bara visuella skämt, inga riktiga virus.
-   ================================================== */
-
+/* =================================================
+   JAVASCRIPT 7: FAKE VIRUSPOPUPS
+   ================================================= */
 const popupMessages = [
-    {
-        title: "VIRUS ALERT",
-        message: "<strong>VARNING!</strong><br>Okänd närvaro upptäckt."
-    },
-    {
-        title: "SYSTEM WARNING",
-        message: "<strong>Fel!</strong><br>Någon tittar tillbaka på dig."
-    },
-    {
-        title: "CRITICAL ERROR",
-        message: "<strong>ÅTKOMST NEKAD</strong><br>Du borde ha lyssnat."
-    },
-    {
-        title: "UNKNOWN PROCESS",
-        message: "<strong>VARNING!</strong><br>Det går inte att stänga mörkret."
-    },
-    {
-        title: "SYSTEM ALERT",
-        message: "<strong>FELKOD 666</strong><br>Du är inte ensam."
-    },
-    {
-        title: "CONNECTION LOST",
-        message: "<strong>ANSLUTNINGEN AVBRUTEN</strong><br>Men något är kvar."
-    }
+    ["VIRUS ALERT", "VARNING! Okänd närvaro upptäckt."],
+    ["SYSTEM WARNING", "Någon tittar tillbaka på dig."],
+    ["CRITICAL ERROR", "Du borde ha lyssnat."],
+    ["UNKNOWN PROCESS", "Det går inte att stänga mörkret."],
+    ["SYSTEM ALERT", "FELKOD 666."],
+    ["CONNECTION LOST", "Men något är fortfarande kvar."]
 ];
 
 function createFakePopup(index) {
@@ -1154,55 +842,53 @@ function createFakePopup(index) {
     const popup = document.createElement("div");
     popup.className = "fake-popup";
 
-    // Slumpad placering inom fönstret.
     popup.style.left = Math.floor(Math.random() * 65) + "%";
     popup.style.top = Math.floor(Math.random() * 70) + "%";
 
-    popup.innerHTML = `
-        <div class="popup-title">${data.title}</div>
-        <div class="popup-message">
-            ${data.message}
-        </div>
-    `;
+    // Detta är en visuell fejkvarning, inte ett riktigt virus.
+    const title = document.createElement("div");
+    title.className = "popup-title";
+    title.textContent = data[0];
 
+    const message = document.createElement("div");
+    message.className = "popup-message";
+    message.textContent = data[1];
+
+    popup.append(title, message);
     container.appendChild(popup);
 }
 
-/* ==================================================
-   JAVASCRIPT: HELA SKRÄCKSEKVENSEN
-   ================================================== */
-
+/* =================================================
+   JAVASCRIPT 8: HELA SKRÄCKSEKVENSEN
+   ================================================= */
 function beginHorrorSequence() {
-    // Skräckfigurer dyker upp en efter en.
-    for (let i = 0; i < 9; i++) {
-        setTimeout(() => {
-            showJumpScare();
-        }, 900 + i * 850);
+    // Bilderna dyker upp en i taget från olika kanter.
+    for (let i = 0; i < 5; i++) {
+        setTimeout(showJumpScare, 700 + i * 1100);
     }
 
-    // Fake virusvarningar börjar efter en stund.
+    // Fejkvarningar dyker upp senare.
     setTimeout(() => {
         for (let i = 0; i < 6; i++) {
             setTimeout(() => {
                 createFakePopup(i);
-                playCreepySound(80 + Math.random() * 100, 0.3);
+                playCreepySound(80 + Math.random() * 100, .3);
             }, i * 650);
         }
-    }, 10500);
+    }, 8500);
 
-    // Alla popups försvinner och slutet visas.
+    // Efter sekvensen visas slutkortet.
     setTimeout(() => {
         document.getElementById("popupContainer").innerHTML = "";
-        document.getElementById("jumpScare").classList.remove("show");
+        document.getElementById("scareLayer").innerHTML = "";
         showPage("endingPage");
         playCreepySound(50, 1.8);
-    }, 16000);
+    }, 14000);
 }
 
-/* ==================================================
-   JAVASCRIPT: ÖPPNA DET HEMLIGA KORTET
-   ================================================== */
-
+/* =================================================
+   JAVASCRIPT 9: DET HEMLIGA KORTET
+   ================================================= */
 function openSecretCard() {
     showPage("secretCard");
     playCreepySound(40, 2);
