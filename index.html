@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -405,7 +404,7 @@ button {
 
 <body>
 
-<!-- STARTSKÄRM: KLICKA VAR SOM HELST -->
+<!-- STARTSKÄRM -->
 
 <section id="room" aria-label="Klicka var som helst för att starta">
     <img id="roomImage" src="gammal.jpg" alt="">
@@ -482,18 +481,15 @@ button {
 
 <div id="errorLayer"></div>
 
-<!-- SLUTSKÄRM UTAN BILDER -->
+<!-- SLUTSKÄRM -->
 
 <section id="ending">
     <div class="ending-content">
         <h1>GLAD HALLOWEEN</h1>
 
         <p>Du klarade det.</p>
-
         <p>Eller gjorde du verkligen det?</p>
-
         <p>Okänd närvaro upptäckt...</p>
-
         <p>Uppdatering slutförd. Du skulle inte ha tryckt.</p>
 
         <div id="secretMessage">
@@ -672,7 +668,7 @@ document.getElementById("openForbidden").addEventListener("click", () => {
     }, 200);
 });
 
-/* 25 OLIKA VIRUS- OCH SYSTEMVARNINGAR */
+/* 25 VIRUS- OCH SYSTEMVARNINGAR */
 
 const errorMessages = [
     ["Virus upptäckt", "Ett okänt virus har upptäckts i systemet."],
@@ -702,27 +698,100 @@ const errorMessages = [
     ["Sista varningen", "Du skulle inte ha tryckt."]
 ];
 
-/* SPELA FEL-LJUDET MED LÄGRE VOLYM */
+/* VIRUSLJUD: FYRA OLIKA LJUD SOM SKAPAS AUTOMATISKT */
 
-function playWindowsError() {
+let virusAudioContext = null;
+
+function playVirusSound() {
     try {
-        if (currentErrorSound) {
-            currentErrorSound.pause();
-            currentErrorSound.currentTime = 0;
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) return;
+
+        if (!virusAudioContext) {
+            virusAudioContext = new AudioContextClass();
         }
 
-        currentErrorSound = windowsError.cloneNode();
-        currentErrorSound.volume = 0.12;
+        const ctx = virusAudioContext;
 
-        const playPromise = currentErrorSound.play();
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
 
-        if (playPromise) {
-            playPromise.catch(error => {
-                console.warn("Kunde inte spela error.MP3:", error);
-            });
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        const mode = Math.floor(Math.random() * 4);
+
+        if (mode === 0) {
+            /* Mörkt BOOM */
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(110, now);
+            osc.frequency.exponentialRampToValueAtTime(40, now + 0.30);
+
+            gain.gain.setValueAtTime(0.20, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.36);
+
+        } else if (mode === 1) {
+            /* Mörkt DOOM */
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(85, now);
+            osc.frequency.exponentialRampToValueAtTime(45, now + 0.40);
+
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.46);
+
+        } else if (mode === 2) {
+            /* Elektronisk glitch */
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(650, now);
+            osc.frequency.setValueAtTime(220, now + 0.08);
+            osc.frequency.setValueAtTime(520, now + 0.13);
+
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.19);
+
+        } else {
+            /* Kort digital varningssignal */
+            osc.type = "square";
+            osc.frequency.setValueAtTime(280, now);
+            osc.frequency.setValueAtTime(380, now + 0.07);
+
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.17);
         }
     } catch (error) {
-        console.warn("Kunde inte spela felljudet:", error);
+        console.warn("Virusljudet kunde inte spelas:", error);
+    }
+
+    /* Försök även spela den befintliga error.MP3-filen */
+    try {
+        const sound = windowsError.cloneNode();
+        sound.volume = 0.10;
+        sound.play().catch(() => {});
+    } catch (error) {
+        // De inbyggda ljuden fungerar även utan MP3-filen.
     }
 }
 
@@ -781,7 +850,8 @@ function createErrorPopup(index) {
 
     errorLayer.appendChild(popup);
 
-    playWindowsError();
+    /* Ett nytt ljud för varje popup */
+    playVirusSound();
 }
 
 /* SVART SKÄRM OCH 25 POPUPS */
@@ -801,7 +871,7 @@ function startVirusSequence() {
 
     let count = 0;
 
-    /* En ny varningsruta ungefär var 700:e millisekund. */
+    /* En ny varningsruta ungefär var 700:e millisekund */
     popupInterval = setInterval(() => {
         createErrorPopup(count);
         count++;
@@ -810,7 +880,7 @@ function startVirusSequence() {
             clearInterval(popupInterval);
             popupInterval = null;
 
-            /* Låt alla varningar synas innan slutet. */
+            /* Låt alla varningar synas innan slutet */
             setTimeout(() => {
                 finishHalloween();
             }, 3000);
@@ -823,11 +893,6 @@ function startVirusSequence() {
 function finishHalloween() {
     errorLayer.innerHTML = "";
     errorLayer.classList.remove("active");
-
-    if (currentErrorSound) {
-        currentErrorSound.pause();
-        currentErrorSound.currentTime = 0;
-    }
 
     ending.classList.add("visible");
     playCreepySound(48, 3);
