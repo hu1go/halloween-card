@@ -4,857 +4,907 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Halloween 2026</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+<title>Spooky Halloween</title>
 
 <style>
 * { box-sizing: border-box; }
 
-body {
+html, body {
     margin: 0;
-    background: #030303;
-    color: #ddd;
-    font-family: "Special Elite", monospace;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    background: #000;
+    color: #fff;
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
 }
 
-button {
-    font: inherit;
-    cursor: pointer;
-}
+button { font: inherit; cursor: pointer; }
+.hidden { display: none !important; }
 
-button:focus-visible {
-    outline: 2px solid #d66;
-    outline-offset: 4px;
-}
+/* STARTSKÄRM */
 
 #room {
     position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 100;
     overflow: hidden;
-    background: #020407;
-    transition: opacity 1.4s;
+    cursor: pointer;
+    background: #000;
 }
 
 #roomImage {
-    position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    transform-origin: 44% 45%;
-    transition: transform 4s cubic-bezier(.55, 0, .8, .25);
-    cursor: pointer;
+    filter: brightness(.72);
+    transform: scale(1);
+}
+
+#roomFog {
+    position: absolute;
+    inset: -25%;
+    pointer-events: none;
+    opacity: .24;
+    background:
+        radial-gradient(ellipse at 20% 50%, #bbb4 0%, transparent 35%),
+        radial-gradient(ellipse at 70% 40%, #fff2 0%, transparent 40%),
+        radial-gradient(ellipse at 45% 80%, #8883 0%, transparent 35%);
+    filter: blur(35px);
+    animation: fogMove 12s ease-in-out infinite alternate;
+}
+
+@keyframes fogMove {
+    from { transform: translate(-4%, 2%) scale(1); }
+    to { transform: translate(5%, -3%) scale(1.12); }
+}
+
+#roomDarkness {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 3s;
 }
 
 #room.zooming #roomImage {
-    transform: scale(3.5);
+    animation: roomZoom 10s ease-in forwards;
 }
 
-#room::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 35%, #000b 100%);
+@keyframes roomZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.45); }
 }
 
-#startPrompt {
-    position: absolute;
-    z-index: 5;
-    left: 50%;
-    bottom: 12%;
-    transform: translateX(-50%);
-    width: min(90%, 520px);
-    padding: 18px;
-    border: 1px solid #633;
-    background: #000c;
-    color: #d6bdbd;
-    text-align: center;
-    font-size: 16px;
-    animation: promptPulse 2.5s infinite;
-}
+#room.blackout #roomDarkness { opacity: 1; }
 
-#startPrompt span {
-    display: block;
-    margin-top: 8px;
-    color: #999;
-    font-size: 12px;
-}
-
-@keyframes promptPulse {
-    0%, 100% { opacity: .7; }
-    50% { opacity: 1; }
-}
-
-.fog {
-    position: absolute;
-    z-index: 2;
-    left: -40%;
-    bottom: -5%;
-    width: 180%;
-    height: 45%;
-    opacity: .28;
-    pointer-events: none;
-    filter: blur(28px);
-    background:
-        radial-gradient(ellipse at 20% 65%, #c2c5cc88, transparent 45%),
-        radial-gradient(ellipse at 65% 75%, #aeb4bd77, transparent 45%),
-        radial-gradient(ellipse at 90% 60%, #c6c6c655, transparent 35%);
-    animation: fogDrift 17s ease-in-out infinite alternate;
-}
-
-.fog.two {
-    bottom: 8%;
-    opacity: .14;
-    animation-duration: 25s;
-    animation-direction: alternate-reverse;
-}
-
-@keyframes fogDrift {
-    from { transform: translate(-7%, 15px); }
-    to { transform: translate(8%, -25px); }
-}
-
-#blackout {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 30;
-    background: #000;
-    opacity: 0;
-    transition: opacity 1s;
-}
-
-#blackout.visible {
-    display: block;
-    opacity: 1;
-}
+/* SKRIVBORD */
 
 #desktop {
-    display: none;
     position: fixed;
     inset: 0;
-    z-index: 5;
-    padding: 22px;
-    background: radial-gradient(ellipse at center, #20251d, #080a08 75%);
+    opacity: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, #202020, #080808 65%, #000);
+    transition: opacity 2s;
 }
 
-#desktop::after {
-    content: "";
+#desktop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.desktop-glow {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: .12;
-    background: repeating-linear-gradient(0deg, transparent 0 3px, #000 4px 5px);
+    background: radial-gradient(ellipse at 50% 45%, #67131320, transparent 65%);
 }
 
 .desktop-icons {
-    position: relative;
-    z-index: 2;
+    position: absolute;
+    top: 25px;
+    left: 20px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
+    gap: 22px;
 }
 
-.app-icon {
-    width: 120px;
-    min-height: 105px;
-    padding: 10px 5px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: #eee;
+.desktop-icon {
+    width: 105px;
+    min-height: 95px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: white;
     text-align: center;
-    text-shadow: 1px 1px #000;
+    font-size: 12px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    text-shadow: 0 1px 3px #000;
 }
 
-.app-icon:hover {
-    background: #ffffff12;
-    border-color: #ffffff44;
+.desktop-icon:hover {
+    background: #ffffff19;
+    border-color: #ffffff30;
 }
 
-.app-image {
+.icon-picture {
+    width: 45px;
+    height: 45px;
     display: grid;
     place-items: center;
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 8px;
-    border: 2px solid #4c4c4c;
-    background: #101010;
-    box-shadow: 0 0 12px #000;
-    font-size: 30px;
+    font-size: 34px;
 }
 
-.app-icon span {
-    display: block;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.app-image.halloween {
-    color: #e76c16;
-    border-color: #8c4016;
-}
-
-.app-image.danger {
-    color: #f22;
-    border-color: #a00000;
-}
-
-.page {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    overflow-y: auto;
-    padding: 20px;
-    background: #050505;
-}
-
-.page.active {
+#taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #171717e8;
+    border-top: 1px solid #ffffff20;
+    font-size: 12px;
+    color: #ddd;
 }
 
-.primary-button {
-    margin: 8px;
-    padding: 12px 18px;
-    border: 1px solid #831111;
-    background: #160707;
-    color: #eee;
-    transition: .2s;
-}
-
-.primary-button:hover {
-    background: #480909;
-    box-shadow: 0 0 10px #b0000033;
-}
-
-#normalCard {
-    background: radial-gradient(ellipse at center, #25120f, #050505 75%);
-}
-
-.card-paper {
-    position: relative;
-    width: min(700px, 94vw);
-    max-height: 94vh;
-    overflow-y: auto;
-    padding: 32px 22px;
-    border: 3px solid #561010;
-    text-align: center;
-    background: radial-gradient(ellipse at center, #321716, #100a09 80%);
-    box-shadow: 0 0 35px #7d000033;
-}
-
-.card-paper::before {
-    content: "";
+#clock {
     position: absolute;
-    inset: 8px;
-    border: 1px solid #741919;
-    pointer-events: none;
+    right: 18px;
 }
 
-.card-paper h1 {
-    color: #c83232;
-    font: clamp(38px, 8vw, 68px) "Creepster", cursive;
-    text-shadow: 1px 1px #260000, 0 0 6px #8d000044;
-}
+/* FÖNSTER */
 
-.card-paper p {
-    line-height: 1.8;
-    color: #c4b9a4;
-}
-
-.blood {
+.window {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 28px;
-    background:
-        radial-gradient(ellipse at 12% 0%, #7d0000 0 18%, transparent 20%),
-        radial-gradient(ellipse at 34% 0%, #8c0000 0 24%, transparent 26%),
-        radial-gradient(ellipse at 58% 0%, #600000 0 20%, transparent 22%),
-        radial-gradient(ellipse at 82% 0%, #850000 0 24%, transparent 26%);
+    top: 50%;
+    left: 50%;
+    width: min(620px, 92vw);
+    max-height: 84vh;
+    overflow: auto;
+    transform: translate(-50%, -50%);
+    background: #161616;
+    border: 1px solid #5b5b5b;
+    box-shadow: 0 20px 80px #000c;
+    color: white;
 }
 
-.card-picture {
+.window-title {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, #292929, #111);
+    border-bottom: 1px solid #414141;
+    font-size: 13px;
+}
+
+.window-close {
+    border: 0;
+    background: transparent;
+    color: #ddd;
+    font-size: 20px;
+    padding: 0 5px;
+}
+
+.window-close:hover { color: #ff6666; }
+
+.window-content { padding: 22px; }
+
+.window-content p {
+    margin: 12px 0;
+    line-height: 1.6;
+    color: #ddd;
+}
+
+.window-content img {
     display: block;
-    width: min(300px, 85%);
-    max-height: 270px;
+    width: 100%;
+    max-height: 340px;
     object-fit: contain;
-    margin: 22px auto;
-    border: 1px solid #662020;
-    box-shadow: 0 0 20px #000;
+    margin: 12px auto;
 }
 
-#horrorPage {
-    background: radial-gradient(ellipse at center, #180000, #020202 75%);
+.action-button {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 18px;
+    color: white;
+    background: #751717;
+    border: 1px solid #a34444;
+    border-radius: 3px;
 }
 
-.horror-content {
-    width: min(900px, 96vw);
-    text-align: center;
+.action-button:hover { background: #a02222; }
+
+.warning-title {
+    color: #ff5757;
+    font-weight: 700;
 }
 
-.horror-title {
-    color: #d52a2a;
-    font: clamp(30px, 6vw, 62px) "Creepster", cursive;
-    text-shadow: 0 0 7px #70000088;
-    animation: titlePulse 3s infinite;
+.loading-track {
+    height: 14px;
+    width: 100%;
+    margin-top: 20px;
+    background: #333;
+    border: 1px solid #555;
+    overflow: hidden;
 }
 
-@keyframes titlePulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .78; }
+#loadingBar {
+    width: 0;
+    height: 100%;
+    background: #a11;
+    transition: width .2s linear;
 }
 
-#scareLayer {
+/* SKRÄCKSEKVENS */
+
+#horrorOverlay {
     position: fixed;
     inset: 0;
-    z-index: 80;
-    pointer-events: none;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000;
 }
 
-.scare-image {
-    position: absolute;
-    width: min(300px, 70vw);
-    max-height: 55vh;
+#horrorOverlay.active { display: flex; }
+
+#scareImage {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    filter: contrast(1.15) brightness(.9);
-    box-shadow: 0 0 25px #70000088;
-    animation: scareIn .7s both;
+    background: #000;
+    animation: scareFlash .22s ease-in-out;
 }
 
-@keyframes scareIn {
-    0% { opacity: 0; transform: scale(.3); }
-    35% { opacity: 1; transform: scale(1.06); }
+@keyframes scareFlash {
+    0% { opacity: .1; transform: scale(.92); }
+    60% { opacity: 1; transform: scale(1.04); }
     100% { opacity: 1; transform: scale(1); }
 }
 
-.warning-box {
-    width: min(530px, 95%);
-    margin: 25px auto;
-    padding: 25px 16px;
-    border: 2px solid #8e1111;
-    background: linear-gradient(135deg, #211010, #050505);
-    box-shadow: 0 0 25px #90000022;
-}
+/* FEJKAT WINDOWS-FEL */
 
-.warning-box h2 {
-    color: #e2caca;
-    font: clamp(25px, 5vw, 38px) "Creepster", cursive;
-}
-
-#popupContainer {
+#errorLayer {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 300;
     pointer-events: none;
 }
 
-.fake-popup {
+.error-popup {
     position: absolute;
-    width: min(290px, 82vw);
-    border: 2px solid #777;
-    background: #d5d5d5;
+    width: min(350px, 88vw);
     color: #111;
-    font: 12px Arial, sans-serif;
-    box-shadow: 5px 5px 20px #000;
-    animation: popupIn .3s both;
+    background: #f0f0f0;
+    border: 1px solid #777;
+    box-shadow: 0 8px 30px #000b;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    animation: popupAppear .18s ease-out;
 }
 
-.popup-title {
-    padding: 7px;
-    background: #153d76;
-    color: white;
-    font-weight: bold;
-}
-
-.popup-message {
-    padding: 12px;
-    line-height: 1.6;
-    color: #111;
-}
-
-@keyframes popupIn {
-    from { opacity: 0; transform: scale(.8); }
+@keyframes popupAppear {
+    from { opacity: 0; transform: scale(.85); }
     to { opacity: 1; transform: scale(1); }
 }
 
-#endingPage {
-    background: radial-gradient(ellipse at center, #350000, #050000 75%);
+.error-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    color: white;
+    background: #222;
 }
 
-.ending-card {
-    width: min(750px, 95%);
+.error-heading button {
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 17px;
+}
+
+.error-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 18px 14px 12px;
+}
+
+.error-symbol { font-size: 27px; color: #c62828; }
+
+.error-body p { line-height: 1.5; }
+
+.error-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 12px 12px;
+}
+
+.error-footer button {
+    padding: 5px 20px;
+    border: 1px solid #888;
+    background: #e8e8e8;
+    color: #111;
+}
+
+/* SLUTSKÄRM */
+
+#ending {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #000;
     text-align: center;
 }
 
-.ending-card h1,
-.secret-paper h1 {
-    color: #dc2929;
-    font: clamp(42px, 8vw, 78px) "Creepster", cursive;
-    text-shadow: 0 0 10px #90000088;
+#ending.visible { display: flex; }
+
+.ending-content {
+    width: min(700px, 95vw);
+    animation: endingFade 2s ease;
 }
 
-.symbol-button {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 1px solid #a00000;
-    background: #100000;
-    color: #d33;
-    font-size: 35px;
-    box-shadow: 0 0 15px #a0000033;
+@keyframes endingFade {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-#secretCard {
-    background: radial-gradient(ellipse at center, #280000, #000 80%);
+.ending-content h1 {
+    color: #b51d1d;
+    font-size: clamp(32px, 6vw, 65px);
+    margin-bottom: 18px;
+    text-shadow: 0 0 22px #9e000055;
 }
 
-.secret-paper {
-    width: min(720px, 95%);
-    max-height: 94vh;
-    overflow-y: auto;
-    padding: 28px;
-    border: 3px solid #800000;
-    background: #090404;
-    text-align: center;
-    box-shadow: 0 0 40px #a0000033;
+.ending-content p {
+    line-height: 1.7;
+    margin: 12px 0;
+    color: #ccc;
+}
+
+.ending-content img {
+    max-width: 100%;
+    max-height: 35vh;
+    object-fit: contain;
+    margin-top: 18px;
+    cursor: pointer;
+}
+
+#secretMessage {
+    display: none;
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid #6d1a1a;
+    color: #ffb4b4;
+    background: #170707;
 }
 
 @media (max-width: 600px) {
-    .page { padding: 10px; }
-    .card-paper { padding: 25px 15px; }
-    #desktop { padding: 12px; }
+    .desktop-icons { top: 15px; left: 8px; }
+    .desktop-icon { width: 90px; }
+    .window-content { padding: 15px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- START: RUMMET -->
-<section id="room">
-    <img id="roomImage" src="old-room.jpg" alt="Mörkt rum med gammal tjock-TV">
+<!-- STARTSKÄRM: KLICKA VAR SOM HELST -->
 
-    <div class="fog"></div>
-    <div class="fog two"></div>
-
-    <button id="startPrompt" type="button">
-        KLICKA FÖR ATT FORTSÄTTA
-        <span>Systemet väntar...</span>
-    </button>
+<section id="room" aria-label="Klicka var som helst för att starta">
+    <img id="roomImage" src="gammal.jpg" alt="">
+    <div id="roomFog"></div>
+    <div id="roomDarkness"></div>
 </section>
 
-<div id="blackout"></div>
+<!-- SKRIVBORD -->
 
-<!-- DATORNS SKRIVBORD -->
-<section id="desktop">
+<main id="desktop">
+    <div class="desktop-glow"></div>
+
     <div class="desktop-icons">
-        <button class="app-icon" onclick="openNormalCard()">
-            <div class="app-image halloween">🎃</div>
-            <span>Halloween 2026</span>
+        <button class="desktop-icon" id="openHalloween">
+            <span class="icon-picture">🎃</span>
+            <span>Spooky Halloween</span>
         </button>
 
-        <button class="app-icon" onclick="startForbiddenApp()">
-            <div class="app-image danger">⚠</div>
+        <button class="desktop-icon" id="openForbidden">
+            <span class="icon-picture">⚠️</span>
             <span>RÖR EJ!</span>
         </button>
     </div>
-</section>
 
-<!-- VANLIGT HALLOWEENKORT -->
-<section class="page" id="normalCard">
-    <div class="card-paper">
-        <div class="blood"></div>
-
-        <h1>Spooky Halloween</h1>
-
-        <p>
-            Det är något i mörkret i natt.<br>
-            Håll dig nära ljuset...
-        </p>
-
-        <img class="card-picture"
-             src="images/Halloween clown.jpg"
-             alt="Läskig Halloween-clown"
-             onerror="this.style.display='none'">
-
-        <p>Önskar dig en riktigt kuslig Halloween 2026.</p>
-
-        <button class="primary-button" onclick="closePages()">
-            Tillbaka till datorn
-        </button>
+    <div id="taskbar">
+        <span>Spooky Halloween • Systemet körs</span>
+        <span id="clock"></span>
     </div>
-</section>
 
-<!-- HEMLIGA SKRÄCKSIDAN -->
-<section class="page" id="horrorPage">
-    <div class="horror-content">
-        <h1 class="horror-title">DU SKULLE INTE HA TRYCKT.</h1>
+    <!-- SPOOKY HALLOWEEN-KORT -->
 
-        <p>Systemet har vaknat.</p>
+    <section class="window hidden" id="halloweenWindow">
+        <header class="window-title">
+            <span>Spooky Halloween</span>
+            <button class="window-close" data-close="halloweenWindow">×</button>
+        </header>
 
-        <div class="warning-box">
-            <h2>JAG VARNADE DIG ATT INTE RÖRA!</h2>
-            <p>Nu är det för sent...</p>
+        <div class="window-content">
+            <h2>🎃 Välkommen till Spooky Halloween</h2>
+            <p>Du trodde väl inte att det skulle bli en helt vanlig Halloween?</p>
 
-            <button class="primary-button" onclick="evilLaugh()">
-                Gå tillbaka
-            </button>
+            <img src="Halloween clown.jpg" alt="Halloween">
 
-            <p id="laughText" aria-live="polite"></p>
+            <p>Det finns något på den här datorn som du verkligen inte borde öppna...</p>
+
+            <button class="action-button" data-close="halloweenWindow">Stäng</button>
         </div>
-    </div>
-</section>
+    </section>
 
-<div id="scareLayer"></div>
-<div id="popupContainer"></div>
+    <!-- RÖR EJ-KORT -->
 
-<!-- SLUTKORT -->
-<section class="page" id="endingPage">
-    <div class="ending-card">
-        <h1>Glad Halloween</h1>
-        <p>Du klarade det. Eller gjorde du verkligen det?</p>
-        <p>Det finns en sak kvar att upptäcka.</p>
+    <section class="window hidden" id="forbiddenWindow">
+        <header class="window-title">
+            <span>Åtkomst nekad</span>
+            <button class="window-close" data-close="forbiddenWindow">×</button>
+        </header>
 
-        <button class="symbol-button"
-                onclick="openSecretCard()"
-                aria-label="Öppna det hemliga kortet">
-            ☠
-        </button>
+        <div class="window-content">
+            <h2 class="warning-title">⚠ ÅTKOMST NEKAD</h2>
+            <p>Du har öppnat ett program som inte borde finnas på den här datorn.</p>
+            <p>Okänd aktivitet upptäckt. Säkerhetssystemet startar en kontroll...</p>
 
-        <p>Klicka på symbolen om du vågar.</p>
-    </div>
-</section>
+            <div class="loading-track">
+                <div id="loadingBar"></div>
+            </div>
 
-<!-- DET HEMLIGA KORTET -->
-<section class="page" id="secretCard">
-    <div class="secret-paper">
-        <h1>Du är inte ensam.</h1>
+            <p id="loadingText">Kontrollerar systemet...</p>
+        </div>
+    </section>
+</main>
 
-        <!-- Lägg en ny, stämningsfull bild i images/final-halloween.jpg -->
-        <img class="card-picture"
-             src="images/final-halloween.jpg"
-             alt="Mörk och kuslig Halloweenbild"
-             onerror="this.style.display='none'">
+<!-- SKRÄCKBILDER -->
 
-        <p>
-            Du kan stänga sidan.<br>
-            Men kommer du verkligen att glömma den?
+<div id="horrorOverlay">
+    <img id="scareImage" src="" alt="">
+</div>
+
+<!-- WINDOWS-FELRUTOR -->
+
+<div id="errorLayer"></div>
+
+<!-- SLUT -->
+
+<section id="ending">
+    <div class="ending-content">
+        <h1>GLAD HALLOWEEN</h1>
+
+        <p>Du klarade det.</p>
+        <p>Eller gjorde du verkligen det?</p>
+
+        <p id="endingWarning">
+            Okänd närvaro upptäckt...
         </p>
 
-        <button class="primary-button" onclick="playFinalLaugh()">
-            ...
-        </button>
+        <p id="endingUpdate">
+            Uppdatering slutförd. Du skulle inte ha tryckt.
+        </p>
+
+        <img id="secretImage"
+             src="final-halloween.jpg"
+             alt="Hemlig Halloweenbild"
+             title="Klicka på bilden">
+
+        <div id="secretMessage">
+            <h2>Du är inte ensam.</h2>
+            <p>Du trodde att allt var över...</p>
+            <p>Men någon är fortfarande här.</p>
+        </div>
+
+        <p style="font-size:12px;color:#666;margin-top:20px">
+            Spooky Halloween 2026
+        </p>
     </div>
 </section>
+
+<!-- LJUD: FILERNA LIGGER DIREKT MED INDEX.HTML -->
+
+<audio id="whiteNoise" src="vit.MP3" preload="auto"></audio>
+<audio id="windowsError" src="error.MP3" preload="auto"></audio>
 
 <script>
-/* LJUDINSTÄLLNINGAR */
-let audioContext;
+const room = document.getElementById("room");
+const desktop = document.getElementById("desktop");
 
-function getAudioContext() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const halloweenWindow = document.getElementById("halloweenWindow");
+const forbiddenWindow = document.getElementById("forbiddenWindow");
+
+const horrorOverlay = document.getElementById("horrorOverlay");
+const scareImage = document.getElementById("scareImage");
+const errorLayer = document.getElementById("errorLayer");
+const ending = document.getElementById("ending");
+
+const whiteNoise = document.getElementById("whiteNoise");
+const windowsError = document.getElementById("windowsError");
+
+let started = false;
+let horrorRunning = false;
+let currentErrorSound = null;
+let whiteNoiseStopTimer = null;
+
+whiteNoise.volume = 0.12;
+windowsError.volume = 0.12;
+
+/* VITT BRUS: BARA VID START, MAX 12 SEKUNDER */
+
+function playWhiteNoise() {
+    whiteNoise.pause();
+    whiteNoise.currentTime = 0;
+    whiteNoise.volume = 0.12;
+
+    if (whiteNoiseStopTimer) {
+        clearTimeout(whiteNoiseStopTimer);
     }
 
-    if (audioContext.state === "suspended") {
-        audioContext.resume();
+    const playPromise = whiteNoise.play();
+
+    if (playPromise) {
+        playPromise.catch(error => {
+            console.warn("Kunde inte spela vit.MP3:", error);
+        });
     }
 
-    return audioContext;
+    whiteNoiseStopTimer = setTimeout(() => {
+        whiteNoise.pause();
+        whiteNoise.currentTime = 0;
+    }, 12000);
 }
 
-/* LÄGRE VOLYM PÅ DE SYNTHETISKA SKRÄCKLJUDEN */
-function playCreepySound(frequency = 65, duration = 1) {
+/* LÅGA LJUDVOLYMER */
+
+let audioContext = null;
+
+function playCreepySound(frequency = 55, duration = 1.5) {
     try {
-        const ctx = getAudioContext();
-        const oscillator = ctx.createOscillator();
-        const gain = ctx.createGain();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
 
-        oscillator.type = "sawtooth";
-        oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(
-            Math.max(20, frequency / 2),
-            ctx.currentTime + duration
-        );
+        if (!audioContext) audioContext = new AudioContextClass();
+        if (audioContext.state === "suspended") audioContext.resume();
 
-        gain.gain.setValueAtTime(.0001, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(.025, ctx.currentTime + .12);
-        gain.gain.linearRampToValueAtTime(.0001, ctx.currentTime + duration);
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+        gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+        gain.gain.linearRampToValueAtTime(0.015, audioContext.currentTime + 0.15);
+        gain.gain.linearRampToValueAtTime(0.0001, audioContext.currentTime + duration);
 
         oscillator.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(audioContext.destination);
 
         oscillator.start();
-        oscillator.stop(ctx.currentTime + duration);
+        oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
-        // Sidan fungerar även om ljud inte stöds.
+        console.warn("Ljudet kunde inte spelas:", error);
     }
 }
 
-/* WINDOWS ERROR-LJUD
-   error.mp3 ska ligga i samma mapp som index.html.
-*/
-const errorAudio = new Audio("Error.mp3");
-errorAudio.preload = "auto";
-errorAudio.volume = 0.20;
+/* KLICKA VAR SOM HELST PÅ STARTBILDEN */
+
+room.addEventListener("click", startExperience);
+
+function startExperience() {
+    if (started) return;
+    started = true;
+
+    playWhiteNoise();
+    playCreepySound(55, 2);
+
+    room.classList.add("zooming");
+
+    setTimeout(() => {
+        room.classList.add("blackout");
+    }, 8500);
+
+    setTimeout(() => {
+        room.style.display = "none";
+        desktop.classList.add("visible");
+        playCreepySound(42, 2);
+    }, 11500);
+}
+
+/* KLOCKA */
+
+function updateClock() {
+    document.getElementById("clock").textContent =
+        new Date().toLocaleTimeString("sv-SE", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+/* KORTEN */
+
+document.getElementById("openHalloween").addEventListener("click", () => {
+    halloweenWindow.classList.remove("hidden");
+});
+
+document.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.close);
+        if (target) target.classList.add("hidden");
+    });
+});
+
+/* RÖR EJ */
+
+document.getElementById("openForbidden").addEventListener("click", () => {
+    if (horrorRunning) return;
+
+    halloweenWindow.classList.add("hidden");
+    forbiddenWindow.classList.remove("hidden");
+
+    const loadingBar = document.getElementById("loadingBar");
+    const loadingText = document.getElementById("loadingText");
+
+    loadingBar.style.width = "0%";
+
+    let progress = 0;
+
+    const loadingInterval = setInterval(() => {
+        progress += 5;
+        loadingBar.style.width = progress + "%";
+
+        if (progress < 30) {
+            loadingText.textContent = "Kontrollerar systemfiler...";
+        } else if (progress < 60) {
+            loadingText.textContent = "Okänd närvaro upptäckt...";
+        } else if (progress < 90) {
+            loadingText.textContent = "Uppdaterar säkerhetssystemet...";
+        } else {
+            loadingText.textContent = "Du skulle inte ha tryckt...";
+        }
+
+        if (progress >= 100) {
+            clearInterval(loadingInterval);
+
+            setTimeout(() => {
+                forbiddenWindow.classList.add("hidden");
+                startHorrorSequence();
+            }, 500);
+        }
+    }, 200);
+});
+
+/* SKRÄCKBILDER – ALLA BILDER LIGGER DIREKT I SAMMA MAPP */
+
+const scareImages = [
+    "Pennywise.jpg",
+    "Ghostface.jpg",
+    "Michael Myers.jpg",
+    "Chucky.jpg",
+    "Horrorface.jpg"
+];
+
+function showScare(imagePath, duration) {
+    return new Promise(resolve => {
+        scareImage.src = imagePath;
+        horrorOverlay.classList.add("active");
+
+        playCreepySound(65 + Math.random() * 35, 0.7);
+
+        setTimeout(() => {
+            horrorOverlay.classList.remove("active");
+            resolve();
+        }, duration);
+    });
+}
+
+async function startHorrorSequence() {
+    if (horrorRunning) return;
+    horrorRunning = true;
+
+    desktop.classList.remove("visible");
+    halloweenWindow.classList.add("hidden");
+    forbiddenWindow.classList.add("hidden");
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    for (const imagePath of scareImages) {
+        await showScare(imagePath, 1000);
+        await new Promise(resolve => setTimeout(resolve, 250));
+    }
+
+    horrorOverlay.classList.remove("active");
+    startErrorPopups();
+}
+
+/* WINDOWS-FEL */
+
+const errorMessages = [
+    {
+        title: "Upptäckt varning",
+        message: "Okänd närvaro upptäckt. En okänd process körs i bakgrunden."
+    },
+    {
+        title: "Säkerhetsvarning",
+        message: "Något har fått åtkomst till systemet. Försök inte stänga av datorn."
+    },
+    {
+        title: "Kritiskt systemfel",
+        message: "En okänd aktivitet har upptäckts. Systemet kan inte förklara vad som händer."
+    },
+    {
+        title: "Windows-varning",
+        message: "Uppdatering pågår. Du skulle inte ha tryckt."
+    },
+    {
+        title: "Okänd närvaro",
+        message: "En okänd närvaro har upptäckts i systemet. Den här processen kan inte avslutas."
+    },
+    {
+        title: "Systemvarning",
+        message: "Du är inte ensam. Systemet kan inte garantera att allt är säkert."
+    }
+];
 
 function playWindowsError() {
     try {
-        // Återställ ljudet om föregående uppspelning inte är klar.
-        const audio = errorAudio.cloneNode();
-        audio.volume = 0.20;
-        audio.currentTime = 0;
+        if (currentErrorSound) {
+            currentErrorSound.pause();
+            currentErrorSound.currentTime = 0;
+        }
 
-        audio.play().catch(() => {
-            // Popupen fungerar även om ljudet inte kan spelas.
-        });
+        currentErrorSound = windowsError.cloneNode();
+        currentErrorSound.volume = 0.12;
+
+        const playPromise = currentErrorSound.play();
+
+        if (playPromise) {
+            playPromise.catch(error => {
+                console.warn("Kunde inte spela error.MP3:", error);
+            });
+        }
     } catch (error) {
-        // Fortsätt även om ljudet inte kan laddas.
+        console.warn("Kunde inte spela felljudet:", error);
     }
 }
 
-/* START: KLICKA FÖR ATT BÖRJA */
-let experienceStarted = false;
-
-document.getElementById("startPrompt").addEventListener("click", startExperience);
-document.getElementById("roomImage").addEventListener("click", startExperience);
-
-function startExperience() {
-    if (experienceStarted) return;
-    experienceStarted = true;
-
-    document.getElementById("startPrompt").style.display = "none";
-
-    // Svagt surr efter det första klicket.
-    playCreepySound(55, 2);
-
-    setTimeout(() => {
-        document.getElementById("room").classList.add("zooming");
-    }, 10000);
-
-    setTimeout(() => {
-        const blackout = document.getElementById("blackout");
-        blackout.style.display = "block";
-
-        requestAnimationFrame(() => {
-            blackout.classList.add("visible");
-        });
-
-        setTimeout(() => {
-            document.getElementById("room").style.display = "none";
-            document.getElementById("desktop").style.display = "block";
-
-            blackout.classList.remove("visible");
-
-            setTimeout(() => {
-                blackout.style.display = "none";
-            }, 1100);
-        }, 1100);
-    }, 14000);
-}
-
-/* VÄXLA MELLAN SIDOR */
-function showPage(id) {
-    document.querySelectorAll(".page").forEach(page => {
-        page.classList.remove("active");
-    });
-
-    document.getElementById(id).classList.add("active");
-}
-
-function openNormalCard() {
-    showPage("normalCard");
-}
-
-function closePages() {
-    document.querySelectorAll(".page").forEach(page => {
-        page.classList.remove("active");
-    });
-
-    document.getElementById("desktop").style.display = "block";
-}
-
-/* SKRATT OCH KNAPPEN GÅ TILLBAKA */
-function evilLaugh() {
-    const laughs = [
-        "HA... ha... ha...",
-        "Hehehe... du trodde väl inte det?",
-        "Ha... ha... FÖR SENT!"
-    ];
-
-    document.getElementById("laughText").textContent =
-        laughs[Math.floor(Math.random() * laughs.length)];
-
-    playCreepySound(85, .4);
-    setTimeout(() => playCreepySound(65, .45), 450);
-}
-
-function playFinalLaugh() {
-    playCreepySound(55, 1.3);
-    setTimeout(() => playCreepySound(75, .7), 900);
-}
-
-/* RÖR EJ-APPEN */
-let horrorStarted = false;
-
-function startForbiddenApp() {
-    if (horrorStarted) return;
-    horrorStarted = true;
-
-    document.getElementById("desktop").style.display = "none";
-
-    const loading = document.createElement("div");
-    loading.id = "loadingScreen";
-
-    loading.style.cssText = `
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        background: #000;
-        display: grid;
-        place-content: center;
-        text-align: center;
-        color: #b52a2a;
-        font: 26px 'Special Elite', monospace;
-        padding: 20px;
-    `;
-
-    loading.innerHTML = `
-        <div>ÅTKOMST NEKAD</div>
-        <p style="font-size:14px;color:#aaa">
-            Avslutar anslutning...
-        </p>
-    `;
-
-    document.body.appendChild(loading);
-
-    playCreepySound(45, 1.4);
-
-    setTimeout(() => {
-        loading.remove();
-        showPage("horrorPage");
-        beginHorrorSequence();
-    }, 4000);
-}
-
-/* DINA BEFINTLIGA SKRÄCKBILDER */
-const scareImages = [
-    "images/Pennywise.jpg",
-    "images/Ghostface.jpg",
-    "images/Michael Myers.jpg",
-    "images/Chucky.jpg",
-    "images/Horrorface.jpg"
-];
-
-let scareIndex = 0;
-
-function showJumpScare() {
-    const layer = document.getElementById("scareLayer");
-    const src = scareImages[scareIndex % scareImages.length];
-    scareIndex++;
-
-    const img = document.createElement("img");
-    img.className = "scare-image";
-    img.src = src;
-    img.alt = "Skräckbild";
-
-    const positions = [
-        { top: "5%", left: "4%" },
-        { top: "8%", right: "4%" },
-        { bottom: "5%", left: "5%" },
-        { bottom: "5%", right: "5%" },
-        { top: "20%", left: "35%" }
-    ];
-
-    Object.assign(
-        img.style,
-        positions[Math.floor(Math.random() * positions.length)]
-    );
-
-    img.onerror = () => img.remove();
-    layer.appendChild(img);
-
-    // Ett svagt syntetiskt ljud per skräckbild.
-    playCreepySound(75 + Math.random() * 35, .45);
-
-    setTimeout(() => img.remove(), 950);
-}
-
-/* WINDOWS-LIKNANDE FELMEDDELANDEN */
-const popupMessages = [
-    ["Windows Alert", "VARNING! Okänd närvaro upptäckt."],
-    ["Critical Error", "Ett okänt fel har inträffat."],
-    ["System Alert", "Någon tittar tillbaka på dig."],
-    ["Connection Lost", "Anslutningen har försvunnit."],
-    ["System Warning", "Du borde ha lyssnat."],
-    ["Critical Error", "FELKOD 666. Okänd process upptäckt."]
-];
-
-function createFakePopup(index) {
-    const container = document.getElementById("popupContainer");
-    const data = popupMessages[index % popupMessages.length];
-
+function createErrorPopup(index) {
+    const message = errorMessages[index % errorMessages.length];
     const popup = document.createElement("div");
-    popup.className = "fake-popup";
 
-    // Håll fönstren inom ungefärliga skärmkanter.
-    popup.style.left = Math.floor(Math.random() * 65) + "%";
-    popup.style.top = Math.floor(Math.random() * 65) + "%";
+    popup.className = "error-popup";
 
-    const title = document.createElement("div");
-    title.className = "popup-title";
-    title.textContent = data[0];
+    const maxX = Math.max(0, window.innerWidth - 360);
+    const maxY = Math.max(0, window.innerHeight - 220);
 
-    const message = document.createElement("div");
-    message.className = "popup-message";
-    message.textContent = data[1];
+    popup.style.left = Math.floor(Math.random() * maxX) + "px";
+    popup.style.top = Math.floor(Math.random() * maxY) + "px";
+    popup.style.zIndex = String(310 + index);
 
-    popup.append(title, message);
-    container.appendChild(popup);
+    const heading = document.createElement("div");
+    heading.className = "error-heading";
 
-    // Ett Windows-felljud per popup.
+    const title = document.createElement("span");
+    title.textContent = message.title;
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "×";
+    close.setAttribute("aria-label", "Stäng");
+
+    heading.append(title, close);
+
+    const body = document.createElement("div");
+    body.className = "error-body";
+
+    const symbol = document.createElement("span");
+    symbol.className = "error-symbol";
+    symbol.textContent = "❌";
+
+    const text = document.createElement("p");
+    text.textContent = message.message;
+
+    body.append(symbol, text);
+
+    const footer = document.createElement("div");
+    footer.className = "error-footer";
+
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.textContent = "OK";
+
+    footer.appendChild(ok);
+    popup.append(heading, body, footer);
+
+    close.addEventListener("click", () => popup.remove());
+    ok.addEventListener("click", () => popup.remove());
+
+    errorLayer.appendChild(popup);
     playWindowsError();
 }
 
-/* HELA SKRÄCKSEKVENSEN */
-function beginHorrorSequence() {
-    // Fem skräckbilder med lite lugnare mellanrum.
-    for (let i = 0; i < 5; i++) {
-        setTimeout(showJumpScare, 800 + i * 1300);
+function startErrorPopups() {
+    errorLayer.innerHTML = "";
+
+    let count = 0;
+    const totalPopups = 6;
+
+    const popupInterval = setInterval(() => {
+        createErrorPopup(count);
+        count++;
+
+        if (count >= totalPopups) {
+            clearInterval(popupInterval);
+
+            setTimeout(() => {
+                finishHalloween();
+            }, 2500);
+        }
+    }, 1300);
+}
+
+/* SLUTSKÄRM */
+
+function finishHalloween() {
+    errorLayer.innerHTML = "";
+
+    if (currentErrorSound) {
+        currentErrorSound.pause();
+        currentErrorSound.currentTime = 0;
     }
 
-    // Felmeddelandena börjar efter skräckbilderna.
-    setTimeout(() => {
-        for (let i = 0; i < 6; i++) {
-            setTimeout(() => {
-                createFakePopup(i);
-            }, i * 1300);
-        }
-    }, 8500);
-
-    // Rensa popupfönstren och visa slutkortet.
-    setTimeout(() => {
-        document.getElementById("popupContainer").innerHTML = "";
-        document.getElementById("scareLayer").innerHTML = "";
-
-        showPage("endingPage");
-        playCreepySound(50, 1.2);
-    }, 17000);
+    ending.classList.add("visible");
+    playCreepySound(48, 3);
 }
 
-/* DET HEMLIGA KORTET */
-function openSecretCard() {
-    showPage("secretCard");
-    playCreepySound(40, 1.3);
-}
+/* HEMLIGT MEDDELANDE */
+
+document.getElementById("secretImage").addEventListener("click", () => {
+    const secretMessage = document.getElementById("secretMessage");
+
+    if (secretMessage.style.display === "block") {
+        secretMessage.style.display = "none";
+    } else {
+        secretMessage.style.display = "block";
+        playCreepySound(60, 1.2);
+    }
+});
+
+/* STOPPA LJUD OM SIDAN LÄMNAS */
+
+window.addEventListener("beforeunload", () => {
+    whiteNoise.pause();
+
+    if (currentErrorSound) {
+        currentErrorSound.pause();
+    }
+});
 </script>
 
 </body>
